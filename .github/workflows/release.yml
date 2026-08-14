@@ -1,0 +1,32 @@
+# Release workflow: push a v-prefixed tag (e.g. v0.1.0) to build the plugin
+# tarball from the committed artifacts and publish a GitHub Release.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package plugin tarball
+        run: |
+          set -euo pipefail
+          pkg="dsh-shutdown-button-${{ github.ref_name }}"
+          mkdir -p "dist/$pkg"
+          cp package.json README.md LICENSE cordis.patch.yml tsconfig.json tsdown.config.ts "dist/$pkg/"
+          cp -r lib src "dist/$pkg/"
+          tar -czf "${pkg}.tar.gz" -C dist "$pkg"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.GITHUB_TOKEN }}
+        run: gh release create "${{ github.ref_name }}" "dsh-shutdown-button-${{ github.ref_name }}.tar.gz" --generate-notes
