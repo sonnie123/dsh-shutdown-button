@@ -1,0 +1,5 @@
+# dsh-shutdown-button bundle layer: one row that is both a host plugin
+# (registers /api/dsh-shutdown) and a browser roster entry (dsh.client).
+- insert:
+    - id: dsh-shutdown-button
+      name: dsh-shutdown-button
